@@ -1,0 +1,31 @@
+[project]
+name = "ci-cd-pipeline"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi",
+    "httpx",
+    "uvicorn",
+    "pytest",
+    "pytest-cov",
+    "coverage[toml]",
+    "black",
+    "ruff",
+    "bandit",
+    "semgrep"
+]
+
+[tool.coverage.run]
+branch = true
+source = ["app"]
+
+[tool.coverage.report]
+show_missing = true
+
+[tool.black]
+line-length = 88
+
+[tool.ruff]
+line-length = 88
