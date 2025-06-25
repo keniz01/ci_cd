@@ -5,10 +5,12 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
-    "fastapi",
+    "pydantic",
     "httpx",
-    "uvicorn",
+    "uvicorn[standard]",
     "pytest",
+    "fastapi",
+    "fastapi-cli[standard]",
     "pytest-cov",
     "coverage[toml]",
     "black",
@@ -16,6 +18,9 @@ dependencies = [
     "bandit",
     "semgrep"
 ]
+
+[project.scripts]
+fastapi = { extras = ["cli"] }
 
 [tool.coverage.run]
 branch = true
