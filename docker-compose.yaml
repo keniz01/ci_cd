@@ -4,6 +4,9 @@ services:
     ports:
       - "8000:8000"
     volumes:
-      - .:/app
+      - .:/app:delegated
+      - /app/.venv  # anonymous volume so container's venv persists      
     environment:
-      - PYTHONUNBUFFERED=1
+      - UV_COMPILE_BYTECODE=1
+      - UV_LINK_MODE=copy
+    command: ["/app/.venv/bin/uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
