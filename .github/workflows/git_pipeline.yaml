@@ -31,7 +31,9 @@ jobs:
         run: uv sync --locked --all-extras --dev
 
       - name: Lint with ruff
-        run: ruff app tests
+        uses: astral-sh/ruff-action@v3
+        run: ruff check --fix
+        run: ruff format
 
       - name: Format with black
         run: black --check app tests
