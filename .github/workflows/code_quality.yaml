@@ -6,7 +6,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup
-      - run: uv lock --locked
+      - run: uv sync --locked --all-extras --dev
 
   linting:
     runs-on: ubuntu-latest
