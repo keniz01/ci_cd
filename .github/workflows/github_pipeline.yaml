@@ -33,7 +33,7 @@ jobs:
       - name: Ruff linting and formatting
         uses: astral-sh/ruff-action@v3
 
-  zap_scan:
+  zap-scan:
     runs-on: ubuntu-latest
 
     steps:
