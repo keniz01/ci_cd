@@ -1,4 +1,4 @@
-name: CI
+name: Python CI Pipeline
 
 on:
   push:
@@ -10,6 +10,11 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
+    services:
+      docker:
+        image: docker:19.03.12
+        options: --privileged
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -17,23 +22,13 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.12'  # Adjust to your project's Python version
+          python-version: '3.11'
 
       - name: Install uv
-        run: |
-          curl -LsSf https://astral.sh/uv/install.sh | sh
-          echo "$HOME/.cargo/bin" >> $GITHUB_PATH
+        uses: astral-sh/setup-uv@v5
 
-      - name: Create virtual environment and install dependencies
-        uses: .github/actions/setup
+      - name: Install dependencies
+        run: uv sync --locked --all-extras --dev
 
-      - name: Lint and check formatting with Ruff
-        run: |
-          source .venv/bin/activate
-          ruff check .
-          ruff format --check .
-
-      - name: Run tests with Pytest
-        run: |
-          source .venv/bin/activate
-          pytest
+      - name: Lint with ruff
+        uses: astral-sh/ruff-action@v3
