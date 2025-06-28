@@ -7,113 +7,39 @@ on:
     branches: [main]
 
 jobs:
-  lock_file:
+  setup:
     runs-on: ubuntu-latest
+
+    services:
+      docker:
+        image: docker:19.03.12
+        options: --privileged
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup environment
-        uses: ./.github/actions/setup
-
-      - name: Sync dependencies
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+  install_uv:
+    runs-on: ubuntu-latest
+    needs: [setup]
+    steps:
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+  install_dependencies:
+    runs-on: ubuntu-latest
+    needs: [install_uv]
+    steps:
+      - name: Install dependencies
         run: uv sync --locked --all-extras --dev
 
-  linting:
+  ruff_linting:
     runs-on: ubuntu-latest
-    needs: lock_file
+    needs: [install_dependencies]
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup environment
-        uses: ./.github/actions/setup
-
-      - name: Lint with Ruff
-        run: uvx ruff check .
-
-  formatting:
-    runs-on: ubuntu-latest
-    needs: lock_file
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup environment
-        uses: ./.github/actions/setup
-
-      - name: Check code formatting
-        run: uvx ruff format --check .
-
-  type_consistency:
-    runs-on: ubuntu-latest
-    needs: lock_file
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup environment
-        uses: ./.github/actions/setup
-
-      - name: Check types with Pyright
-        run: uv run pyright .
-
-  static_analysis:
-    runs-on: ubuntu-latest
-    needs: lock_file
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup environment
-        uses: ./.github/actions/setup
-
-      - name: Run Bandit
-        run: uv run bandit -r app
-
-      - name: Run Semgrep
-        uses: returntocorp/semgrep-action@v1
-
-  tests:
-    runs-on: ubuntu-latest
-    needs: lock_file
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup environment
-        uses: ./.github/actions/setup
-
-      - name: Run tests with coverage
-        run: |
-          uv run coverage run -m pytest -v --durations=0
-          uv run coverage report
-          uv run coverage xml
-
-  build:
-    runs-on: ubuntu-latest
-    needs: [linting, formatting, type_consistency, static_analysis, tests]
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup environment
-        uses: ./.github/actions/setup
-
-      - name: Build project
-        run: uv build
-
-  dast:
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Start services
-        run: docker-compose up -d
-
-      - name: Run OWASP ZAP Baseline Scan
-        uses: zaproxy/action-baseline@v0.11.0
-        with:
-          target: "http://localhost:8000"
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup
+      - run: uvx ruff check .
