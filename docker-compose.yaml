@@ -9,4 +9,4 @@ services:
     environment:
       - UV_COMPILE_BYTECODE=1
       - UV_LINK_MODE=copy
-    command: ["/app/.venv/bin/uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+    command: ["/app/.venv/bin/uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "8000"]

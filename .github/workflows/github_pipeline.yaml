@@ -25,10 +25,7 @@ jobs:
           echo "$HOME/.cargo/bin" >> $GITHUB_PATH
 
       - name: Create virtual environment and install dependencies
-        run: |
-          uv venv
-          source .venv/bin/activate
-          uv sync --locked --all-extras --dev
+        uses: .github/actions/setup
 
       - name: Lint and check formatting with Ruff
         run: |
@@ -40,3 +37,30 @@ jobs:
         run: |
           source .venv/bin/activate
           pytest
+
+  trivy:
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run Trivy vulnerability scanner on filesystem
+        uses: aquasecurity/trivy-action@0.16.1
+        with:
+          scan-type: 'fs'
+          scan-ref: '.'
+          format: 'table'
+          exit-code: '1'  # Fail job on findings
+          ignore-unfixed: true
+
+  zap_scan:
+    runs-on: ubuntu-latest
+    needs: build  # Run DAST only after build/tests
+
+    steps:
+      - name: OWASP ZAP Baseline Scan
+        uses: zaproxy/action-baseline@v0.10.0
+        with:
+          target: 'http://localhost:8000'  # Update with the URL of your deployed/staging app
