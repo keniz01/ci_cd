@@ -19,8 +19,6 @@ dependencies = [
     "semgrep"
 ]
 
-[project.scripts]
-
 [tool.coverage.run]
 branch = true
 source = ["app"]
@@ -39,7 +37,3 @@ dev = [
     "pyright>=1.1.402",
     "pytest>=8.4.1",
 ]
-
-[build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
