@@ -33,12 +33,10 @@ jobs:
       - name: Lint and check formatting with Ruff
         run: |
           source .venv/bin/activate
-          uv install ruff
           ruff check .
           ruff format --check .
 
       - name: Run tests with Pytest
         run: |
           source .venv/bin/activate
-          uv install pytest
           pytest
