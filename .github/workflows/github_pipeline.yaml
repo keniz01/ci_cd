@@ -28,7 +28,7 @@ jobs:
         run: |
           uv venv
           source .venv/bin/activate
-          uv install
+          uv sync --locked --all-extras --dev
 
       - name: Lint and check formatting with Ruff
         run: |
