@@ -42,7 +42,7 @@ jobs:
 
     - name: Start web app with Docker Compose
       run: |
-        docker-compose up -d
+        docker compose up -d
         sleep 30  # Adjust this delay based on how long your app takes to start
 
     - name: Run OWASP ZAP Baseline Scan
