@@ -1,0 +1,44 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'  # Adjust to your project's Python version
+
+      - name: Install uv
+        run: |
+          curl -LsSf https://astral.sh/uv/install.sh | sh
+          echo "$HOME/.cargo/bin" >> $GITHUB_PATH
+
+      - name: Create virtual environment and install dependencies
+        run: |
+          uv venv
+          source .venv/bin/activate
+          uv install
+
+      - name: Lint and check formatting with Ruff
+        run: |
+          source .venv/bin/activate
+          uv install ruff
+          ruff check .
+          ruff format --check .
+
+      - name: Run tests with Pytest
+        run: |
+          source .venv/bin/activate
+          uv install pytest
+          pytest
