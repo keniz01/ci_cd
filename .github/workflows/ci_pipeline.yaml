@@ -23,16 +23,12 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-  install_uv:
+
+  install_dependencies:
     runs-on: ubuntu-latest
     needs: [setup]
     steps:
-      - name: Install uv
-        uses: astral-sh/setup-uv@v5
-  install_dependencies:
-    runs-on: ubuntu-latest
-    needs: [install_uv]
-    steps:
+      - uses: ./.github/actions/setup
       - name: Install dependencies
         run: uv sync --locked --all-extras --dev
 
