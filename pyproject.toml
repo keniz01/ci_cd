@@ -34,3 +34,9 @@ line-length = 88
 
 [tool.ruff]
 line-length = 88
+
+[dependency-groups]
+dev = [
+    "pyright>=1.1.402",
+    "pytest>=8.4.1",
+]
