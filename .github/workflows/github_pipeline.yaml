@@ -33,9 +33,10 @@ jobs:
       - name: Ruff linting and formatting
         uses: astral-sh/ruff-action@v3
 
-  analyze:
+  codeql:
     name: CodeQL SAST
     runs-on: ubuntu-latest
+    needs: [build]
     permissions:
       security-events: write
       actions: read
@@ -60,9 +61,10 @@ jobs:
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v3
 
-  secrets_detection:
+  gitleaks:
     name: Run Gitleaks
     runs-on: ubuntu-latest
+    needs: [build, codeql]
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -72,35 +74,42 @@ jobs:
       - name: Scan for Secrets with Gitleaks
         uses: gitleaks/gitleaks-action@v2
 
-  bandit:
-    name: Run Bandit SAST
-    runs-on: ubuntu-latest
-    needs: [build]
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+bandit:
+  name: Run Bandit SAST
+  runs-on: ubuntu-latest
+  needs: [build, codeql, gitleaks]
+  steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
 
-      - name: Install Bandit
-        run: uv add bandit
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
 
-      - name: Run Bandit on the codebase
-        run: |
-          bandit -r . -f json -o bandit-report.json
-          bandit -r . -ll  # also show results in console
+    - name: Set up uv
+      uses: astral-sh/setup-uv@v5
 
-      - name: Upload Bandit report artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: bandit-report
-          path: bandit-report.json
+    - name: Install Bandit
+      run: uv add bandit
 
-      - name: Fail if issues found
-        run: |
-          issues=$(bandit -r . -f json | jq '.results | length')
-          if [ "$issues" -gt 0 ]; then
-            echo "::error::Bandit found $issues issues."
-            exit 1
-          fi        
+    - name: Run Bandit on the codebase
+      run: |
+        bandit -r . -f json -o bandit-report.json
+        bandit -r . -ll  # also show results in console
+
+    - name: Upload Bandit report artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: bandit-report
+        path: bandit-report.json
+
+    - name: Fail if issues found
+      run: |
+        issues=$(bandit -r . -f json | jq '.results | length')
+        if [ "$issues" -gt 0 ]; then
+          echo "::error::Bandit found $issues issues."
+          exit 1  
 
   # zap-scan:
   #   runs-on: ubuntu-latest
