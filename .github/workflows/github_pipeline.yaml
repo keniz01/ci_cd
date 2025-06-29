@@ -33,8 +33,8 @@ jobs:
       - name: Ruff linting and formatting
         uses: astral-sh/ruff-action@v3
 
-  sast-scan:
-    name: Analyze
+  analyze:
+    name: CodeQL SAST
     runs-on: ubuntu-latest
     permissions:
       security-events: write
@@ -59,6 +59,48 @@ jobs:
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v3
+
+  secrets_detection:
+    name: Run Gitleaks
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Scan for Secrets with Gitleaks
+        uses: gitleaks/gitleaks-action@v2
+
+  bandit:
+    name: Run Bandit SAST
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install Bandit
+        run: uv add bandit
+
+      - name: Run Bandit on the codebase
+        run: |
+          bandit -r . -f json -o bandit-report.json
+          bandit -r . -ll  # also show results in console
+
+      - name: Upload Bandit report artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: bandit-report
+          path: bandit-report.json
+
+      - name: Fail if issues found
+        run: |
+          issues=$(bandit -r . -f json | jq '.results | length')
+          if [ "$issues" -gt 0 ]; then
+            echo "::error::Bandit found $issues issues."
+            exit 1
+          fi        
 
   # zap-scan:
   #   runs-on: ubuntu-latest
