@@ -95,8 +95,8 @@ jobs:
 
       - name: Run Bandit on the codebase
         run: |
-          bandit -r . -f json -o bandit-report.json
-          bandit -r . -ll  # also show results in console
+          uvx bandit -r . -f json -o bandit-report.json
+          uvx bandit -r . -ll  # also show results in console
 
       - name: Upload Bandit report artifact
         uses: actions/upload-artifact@v4
@@ -106,7 +106,7 @@ jobs:
 
       - name: Fail if issues found
         run: |
-          issues=$(bandit -r . -f json | jq '.results | length')
+          issues=$(uvx andit -r . -f json | jq '.results | length')
           if [ "$issues" -gt 0 ]; then
             echo "::error::Bandit found $issues issues."
             exit 1  
