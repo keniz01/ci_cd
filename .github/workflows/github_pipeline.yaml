@@ -90,9 +90,12 @@ jobs:
   tests:
     runs-on: ubuntu-latest
     steps:
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          version: "0.4.25"
       - name: Run unit tests with pytest
       - uses: actions/checkout@v4
-      - uses: ./.github/actions/setup
       - run: uv run pytest -v --durations=0 --cov --cov-report=xml 
 
   dast-test:
