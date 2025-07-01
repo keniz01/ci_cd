@@ -122,13 +122,15 @@ jobs:
         docker_name: 'ghcr.io/zaproxy/zaproxy:stable'
         target: 'http://localhost:8000'
         allow_issue_writing: false
-        cmd_options: '-quickout report.html -quickprogress'
+        format: 'html'
+        cmd_options: '-r zap_report.html -J zap_report.json -w zap_report.md'
 
     - name: Upload DAST report
       uses: actions/upload-artifact@v4
       with:
-        name: dast-report
-        path: report.html
+        name: zap-report
+        path: |
+          zap_report.html
 
     - name: Cleanup - Stop and remove container
       run: |
