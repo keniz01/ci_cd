@@ -88,29 +88,49 @@ jobs:
       - name: Perform Bandit Analysis
         uses: PyCQA/bandit-action@v1
 
-  # zap-scan:
-  #   runs-on: ubuntu-latest
+  dast-test:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
 
-  #   steps:
-  #   - name: Checkout code
-  #     uses: actions/checkout@v4
+    - name: Build Docker image
+      run: docker build -t web-app:latest .
 
-  #   - name: Start web app with Docker Compose
-  #     run: |
-  #       docker compose up -d
-  #       sleep 30  # Adjust this delay based on how long your app takes to start
+    - name: Run Docker container in detached mode
+      run: |
+        docker run -d --name web-app -p 8000:8000 web-app:latest
 
-  #   - name: Run OWASP ZAP Baseline Scan
-  #     uses: zaproxy/action-baseline@v0.10.0
-  #     with:
-  #       target: 'http://localhost:8000'
-  #       fail_action: true
-  #       allow_issue_writing: false
-  #       report_file: zap_report.html
+    - name: Wait for app to be ready
+      run: |
+        echo "Waiting for Python app to be ready on http://localhost:8000 ..."
+        for i in {1..30}; do
+          if curl --silent --fail http://localhost:8000; then
+            echo "App is up!"
+            exit 0
+          else
+            echo "Waiting for app..."
+            sleep 2
+          fi
+        done
+        echo "App did not start in time"
+        exit 1
 
-  #   - name: Upload ZAP Report
-  #     uses: actions/upload-artifact@v4
-  #     with:
-  #       name: zap-report
-  #       path: zap_report.html
+    - name: Run DAST tests with OWASP ZAP
+      uses: zaproxy/action-full-scan@v0.7.0
+      with:
+        target: 'http://localhost:8000'
+        cmd_options: '-quickout report.html -quickprogress'
+      # The above action spins up ZAP, runs quick scan, outputs report.html
+
+    - name: Upload DAST report
+      uses: actions/upload-artifact@v3
+      with:
+        name: dast-report
+        path: report.html
+
+    - name: Cleanup - Stop and remove container
+      run: |
+        docker stop web-app
+        docker rm web-app
 
