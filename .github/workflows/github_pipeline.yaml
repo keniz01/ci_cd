@@ -87,6 +87,12 @@ jobs:
   #   steps:
   #     - name: Perform Bandit Analysis
   #       uses: PyCQA/bandit-action@v1
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup
+      - run: uv run pytest -v --durations=0 --cov --cov-report=xml 
 
   dast-test:
     runs-on: ubuntu-latest
