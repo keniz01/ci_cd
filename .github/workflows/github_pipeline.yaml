@@ -95,8 +95,8 @@ jobs:
         with:
           version: "0.4.25"
       - name: Run unit tests with pytest
-      - uses: actions/checkout@v4
-      - run: uv run pytest -v --durations=0 --cov --cov-report=xml 
+        uses: actions/checkout@v4
+        run: uv run pytest -v --durations=0 --cov --cov-report=xml 
 
   dast-test:
     runs-on: ubuntu-latest
