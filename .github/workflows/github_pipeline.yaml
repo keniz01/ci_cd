@@ -87,22 +87,22 @@ jobs:
   #   steps:
   #     - name: Perform Bandit Analysis
   #       uses: PyCQA/bandit-action@v1
-tests:
-  runs-on: ubuntu-latest
-  steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-    - name: Install uv
-      uses: astral-sh/setup-uv@v5
-      with:
-        version: "0.4.25"
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          version: "0.4.25"
 
-    - name: Install dependencies
-      run: uv sync --locked --all-extras --dev
+      - name: Install dependencies
+        run: uv sync --locked --all-extras --dev
 
-    - name: Run unit tests with pytest
-      run: uv run pytest -v --durations=0 --cov --cov-report=xml
+      - name: Run unit tests with pytest
+        run: uv run pytest -v --durations=0 --cov --cov-report=xml
 
   dast-test:
     runs-on: ubuntu-latest
