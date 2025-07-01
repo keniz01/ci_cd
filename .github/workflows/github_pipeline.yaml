@@ -111,7 +111,7 @@ jobs:
 
   dast-test:
     runs-on: ubuntu-latest
-    needs: [build, codeql, gitleaks, tests]
+    needs: [build, codeql, gitleaks, tests, bandit]
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
