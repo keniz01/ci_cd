@@ -95,11 +95,11 @@ jobs:
       uses: actions/checkout@v4
 
     - name: Build Docker image
-      run: docker build -t web-app:latest .
+      run: docker compose build
 
     - name: Run Docker container in detached mode
       run: |
-        docker run -d --name web-app -p 8000:8000 web-app:latest
+        docker compose up -d
 
     - name: Wait for app to be ready
       run: |
@@ -121,7 +121,6 @@ jobs:
       with:
         target: 'http://localhost:8000'
         cmd_options: '-quickout report.html -quickprogress'
-      # The above action spins up ZAP, runs quick scan, outputs report.html
 
     - name: Upload DAST report
       uses: actions/upload-artifact@v4
