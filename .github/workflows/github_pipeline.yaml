@@ -8,6 +8,7 @@ on:
 
 jobs:
   build:
+    name: Setup solution
     runs-on: ubuntu-latest
     services:
       docker:
@@ -32,7 +33,7 @@ jobs:
         uses: astral-sh/ruff-action@v3
 
   tests:
-    name: Run unit tests
+    name: Run unit tests (pytest)
     runs-on: ubuntu-latest
     needs: [build]
     steps:
@@ -54,7 +55,7 @@ jobs:
         run: uv run pytest -v --durations=0 --cov --cov-report=xml
 
   codeql:
-    name: Rurn CodeQL SAST
+    name: Run SAST Tests (CodeQL) 
     runs-on: ubuntu-latest
     needs: [build, tests]
     permissions:
@@ -66,7 +67,7 @@ jobs:
       uses: actions/checkout@v4
 
     - name: Initialize CodeQL
-      uses: github/codeql-action/init@v4
+      uses: github/codeql-action/init@v3
       with:
         languages: python
 
@@ -77,7 +78,7 @@ jobs:
       uses: github/codeql-action/analyze@v4
 
   gitleaks:
-    name: Run Gitleaks
+    name: Run Secret Management Tests (Gitleaks)
     runs-on: ubuntu-latest
     needs: [build, codeql, tests]
     steps:
@@ -90,7 +91,7 @@ jobs:
         uses: gitleaks/gitleaks-action@v4
 
   bandit:
-    name: Run Bandit
+    name: Run SAST Tests (Bandit)
     runs-on: ubuntu-latest
     needs: [build, codeql, gitleaks, tests]
     permissions:
@@ -106,6 +107,7 @@ jobs:
   dast-test:
     runs-on: ubuntu-latest
     needs: [build, codeql, gitleaks, tests, bandit]
+    name: Run DAST tests (OWASP ZAP)
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
