@@ -131,11 +131,11 @@ jobs:
       uses: actions/checkout@v4
 
     - name: Build Docker image
-      run: docker compose build
+      run: docker build -t web_app:latest .
 
     - name: Run Docker container in detached mode
       run: |
-        docker compose up -d
+        docker run -d -p 8000:8000 --name web_app web_app:latest
 
     - name: Wait for app to be ready
       run: |
