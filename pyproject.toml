@@ -26,6 +26,8 @@ show_missing = true
 [tool.ruff]
 line-length = 88
 
-[project.optional-dependencies.dev]
-safety = "^3.0.0"
- bandit = "^1.7.9"
+[dependency-groups]
+dev = [
+    "bandit>=1.8.5",
+    "safety>=3.2.9",
+]
