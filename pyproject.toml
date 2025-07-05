@@ -5,18 +5,15 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
-    "pydantic",
-    "httpx",
-    "uvicorn[standard]",
-    "pytest",
-    "fastapi",
-    "fastapi-cli[standard]",
-    "pytest-cov",
-    "coverage[toml]",
-    "black",
-    "ruff",
-    "bandit",
-    "semgrep"
+    "coverage[toml]>=7.9.2",
+    "fastapi[standard]>=0.115.13",
+    "httpx>=0.28.1",
+    "pydantic>=2.11.7",
+    "pyright>=1.1.402",
+    "pytest>=8.4.1",
+    "pytest-cov>=6.2.1",
+    "ruff>=0.12.2",
+    "uvicorn[standard]>=0.34.3",
 ]
 
 [tool.coverage.run]
@@ -26,14 +23,9 @@ source = ["src"]
 [tool.coverage.report]
 show_missing = true
 
-[tool.black]
-line-length = 88
-
 [tool.ruff]
 line-length = 88
 
-[dependency-groups]
-dev = [
-    "pyright>=1.1.402",
-    "pytest>=8.4.1",
-]
+[project.optional-dependencies.dev]
+safety = "^3.0.0"
+ bandit = "^1.7.9"
