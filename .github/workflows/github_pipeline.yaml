@@ -124,7 +124,7 @@ jobs:
 
   dast-test:
     runs-on: ubuntu-latest
-    needs: [build, sca_safety, tests_pytest, secrets_detection_gitleaks, sast_bandit]
+    # needs: [build, sca_safety, tests_pytest, secrets_detection_gitleaks, sast_bandit]
     name: Run OWASP ZAP DAST
     steps:
     - name: Checkout code
