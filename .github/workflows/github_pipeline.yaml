@@ -156,7 +156,7 @@ jobs:
       uses: aquasecurity/trivy-action@0.29.0
       with:
         scan-type: image
-        image-ref: web-app:latest
+        image-ref: web-app
         format: table
         exit-code: 1
         severity: CRITICAL,HIGH
