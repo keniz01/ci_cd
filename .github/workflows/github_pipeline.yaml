@@ -76,7 +76,7 @@ jobs:
           uv run safety check --full-report --json > safety-report.json || echo "Safety scan completed with issues"
 
       - name: Upload Safety Report
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v5
         with:
           name: safety-sca-report
           path: safety-report.json
@@ -117,7 +117,7 @@ jobs:
           uv run bandit -r . -ll -iii -f html -o bandit-report.html || echo "Bandit scan completed with issues"
 
       - name: Upload Bandit Report
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v5
         with:
           name: bandit-sast-html-report
           path: bandit-report.html
@@ -169,7 +169,7 @@ jobs:
         cmd_options: '-r report_html.html -a'
 
     - name: Upload DAST report
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v5
       with:
         name: zap-report
         path: report_html.html
