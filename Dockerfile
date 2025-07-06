@@ -1,22 +1,5 @@
-FROM python:3.12-slim
-
-RUN apt-get update && apt-get install -y curl ca-certificates && \
-    curl -LsSf https://astral.sh/uv/install.sh | sh && \
-    mv ~/.local/bin/uv /usr/local/bin/uv && \
-    rm -rf ~/.local
-
-# # Download & run uv's installer script
-# RUN apk add --no-cache curl ca-certificates
-# RUN curl -LsSf https://astral.sh/uv/install.sh | sh
-
-# # Move the binary into PATH
-# RUN mv ~/.local/bin/uv /usr/local/bin/uv
-
-# # Optional: clean up installer directory
-# RUN rm -rf ~/.local
-
-# Verify installation
-RUN uv --version
+# Use a Python image with uv pre-installed
+FROM ghcr.io/astral-sh/uv:0.6.14-python3.13-bookworm-slim
 
 # Install the project into `/app`
 WORKDIR /app
