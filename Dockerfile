@@ -1,39 +1,19 @@
-FROM alpine:3.14
+FROM python:3.12-slim
 
-# Install build deps
-RUN apk add --no-cache \
-    curl \
-    ca-certificates \
-    build-base \
-    libffi-dev \
-    openssl-dev \
-    bzip2-dev \
-    zlib-dev \
-    xz-dev \
-    readline-dev \
-    sqlite-dev \
-    make \
-    gcc \
-    musl-dev \
-    wget
+RUN apt-get update && apt-get install -y curl ca-certificates && \
+    curl -LsSf https://astral.sh/uv/install.sh | sh && \
+    mv ~/.local/bin/uv /usr/local/bin/uv && \
+    rm -rf ~/.local
 
-# Install Python 3.12 manually
-ENV PYTHON_VERSION=3.12.3
-RUN wget https://www.python.org/ftp/python/${PYTHON_VERSION}/Python-${PYTHON_VERSION}.tar.xz && \
-    tar -xf Python-${PYTHON_VERSION}.tar.xz && \
-    cd Python-${PYTHON_VERSION} && \
-    ./configure --prefix=/usr/local && make -j$(nproc) && make install && \
-    cd .. && rm -rf Python-${PYTHON_VERSION}*
+# # Download & run uv's installer script
+# RUN apk add --no-cache curl ca-certificates
+# RUN curl -LsSf https://astral.sh/uv/install.sh | sh
 
-# Download & run uv's installer script
-RUN apk add --no-cache curl ca-certificates
-RUN curl -LsSf https://astral.sh/uv/install.sh | sh
+# # Move the binary into PATH
+# RUN mv ~/.local/bin/uv /usr/local/bin/uv
 
-# Move the binary into PATH
-RUN mv ~/.local/bin/uv /usr/local/bin/uv
-
-# Optional: clean up installer directory
-RUN rm -rf ~/.local
+# # Optional: clean up installer directory
+# RUN rm -rf ~/.local
 
 # Verify installation
 RUN uv --version
